@@ -11,7 +11,7 @@ import (
 
 func main() {
 
-	file, err := os.Open("/Users/hamishmacdonald/Learning/go/adventofcode/assets/input_day2")
+	file, err := os.Open("/home/elusivenode/study/go_projects/adventofcode/assets/input_day2")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -39,12 +39,12 @@ func main() {
 		}
 	}
 	fmt.Printf("Depth is %v and horizonal is %v\n", depth, hori)
-	fmt.Printf("Answer is %v\n", depth * hori)
+	fmt.Printf("Answer is %v\n", depth*hori)
 }
 
 func getDirections(dirs string) (string, int) {
 	dirsParse := strings.Fields(dirs)
 	direction := dirsParse[0]
-	length, _ :=  strconv.Atoi(dirsParse[1])
+	length, _ := strconv.Atoi(dirsParse[1])
 	return direction, length
 }

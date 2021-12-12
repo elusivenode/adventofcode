@@ -10,7 +10,7 @@ import (
 
 func main() {
 
-	file, err := os.Open("/Users/hamishmacdonald/Learning/go/adventofcode/assets/input_day1")
+	file, err := os.Open("/home/elusivenode/study/go_projects/adventofcode/assets/input_day1")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -24,15 +24,15 @@ func main() {
 
 	var curr, prev, ctr, sumCurr3, sumPrev3, ctr3 int
 	var curr3, prev3 []string
-	for i,s := range lines {
+	for i, s := range lines {
 		prev = curr
 		curr, err = strconv.Atoi(s)
 		if i > 0 && curr > prev {
 			ctr++
 		}
 		if i > 2 {
-			prev3 = lines[i-3:i]
-			curr3 = lines[i-2:i+1]
+			prev3 = lines[i-3 : i]
+			curr3 = lines[i-2 : i+1]
 			sumPrev3 = sumSlice(prev3)
 			sumCurr3 = sumSlice(curr3)
 			if sumCurr3 > sumPrev3 {
@@ -46,8 +46,8 @@ func main() {
 
 func sumSlice(subslice []string) int {
 	var v, sum int
-	for _,s := range subslice {
-		v,_ = strconv.Atoi(s)
+	for _, s := range subslice {
+		v, _ = strconv.Atoi(s)
 		sum += v
 	}
 	return sum

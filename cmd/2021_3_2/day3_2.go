@@ -10,7 +10,7 @@ import (
 
 func main() {
 
-	file, err := os.Open("/Users/hamishmacdonald/Learning/go/adventofcode/assets/input_day3")
+	file, err := os.Open("/home/elusivenode/study/go_projects/adventofcode/assets/input_day3")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -52,7 +52,7 @@ func main() {
 	}
 	oxygenRating, _ := strconv.ParseInt(oxygen[0], 2, 64)
 	co2ScrubberRating, _ := strconv.ParseInt(co2[0], 2, 64)
-	fmt.Printf("Oxygen rating is: %v; CO2 scrubber rating: %v; Life support rating is: %v", oxygenRating, co2ScrubberRating, oxygenRating * co2ScrubberRating)
+	fmt.Printf("Oxygen rating is: %v; CO2 scrubber rating: %v; Life support rating is: %v", oxygenRating, co2ScrubberRating, oxygenRating*co2ScrubberRating)
 }
 
 func getCounts(slice []string, idx int) (mostCommon uint8, leastCommon uint8) {
@@ -75,10 +75,10 @@ func getCounts(slice []string, idx int) (mostCommon uint8, leastCommon uint8) {
 	return mostCommon, leastCommon
 }
 
-func findElement(slice []string, criteria uint8, idx int) []string{
+func findElement(slice []string, criteria uint8, idx int) []string {
 	i := 0
 	for _, x := range slice {
-		if x[idx] == criteria  {
+		if x[idx] == criteria {
 			slice[i] = x
 			i++
 		}
