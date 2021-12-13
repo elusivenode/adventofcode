@@ -5,12 +5,20 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"runtime"
 	"strconv"
 )
 
 func main() {
 
-	file, err := os.Open("/home/elusivenode/study/go_projects/adventofcode/assets/input_day1")
+	opSys := runtime.GOOS
+	var filepath string
+	if opSys == "darwin" {
+		filepath = "/Users/hamishmacdonald/Learning/go/adventofcode/assets/input_day1"
+	} else {
+		filepath = "/home/elusivenode/study/go_projects/adventofcode/assets/input_day1"
+	}
+	file, err := os.Open(filepath)
 	if err != nil {
 		log.Fatal(err)
 	}
