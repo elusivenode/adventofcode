@@ -6,6 +6,8 @@ import (
 	"log"
 	"os"
 	"runtime"
+	"strconv"
+	"strings"
 )
 
 func main() {
@@ -25,9 +27,9 @@ func main() {
 
 	scanner := bufio.NewScanner(file)
 	var numbers string
-	var game []string
-	var games = map[int][]string{}
-	var i, lineCtr int
+	var games = map[int][][]int{}
+	game := make([][]int, 5)
+	var gameNo, lineCtr int
 	var prevLineBlank bool = false
 
 	for scanner.Scan() {
@@ -38,16 +40,27 @@ func main() {
 		} else if len(line) == 0 {
 			prevLineBlank = true
 		} else {
+			lineNos := strings.Split(line, " ")
 			if prevLineBlank == true {
-				game = nil
-				lineCtr = 1
-				i++
+				lineCtr = 0
+				gameNo++
 				prevLineBlank = false
+				for i := 0; i < 5; i++ {
+					game[i] = nil
+				}
+
 			}
-			game = append(game, line)
+			game[lineCtr] = make([]int, 5)
+			i := 0
+			for _, n := range lineNos {
+				if n != "" {
+					game[lineCtr][i], _ = strconv.Atoi(n)
+					i++
+				}
+			}
 			lineCtr++
-			if lineCtr == 6 {
-				games[i] = game
+			if lineCtr == 5 {
+				games[gameNo] = game
 			}
 		}
 	}
