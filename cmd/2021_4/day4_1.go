@@ -26,12 +26,10 @@ func main() {
 	defer file.Close()
 
 	scanner := bufio.NewScanner(file)
-	var numbers string
+	var numbers []string
 	var games = map[int][][]int{}
 	var scores = map[int][][]int{}
 	var progress = map[int]map[string]int{}
-	game := make([][]int, 5)
-	score := make([][]int, 5)
 	var gameNo, lineCtr int
 	var prevLineBlank bool = false
 
@@ -39,7 +37,7 @@ func main() {
 		line := scanner.Text()
 		//first line is long
 		if len(line) > 20 {
-			numbers = line
+			numbers = strings.Split(line, ",")
 		} else if len(line) == 0 {
 			prevLineBlank = true
 		} else {
@@ -48,31 +46,25 @@ func main() {
 				lineCtr = 0
 				gameNo++
 				prevLineBlank = false
-				for i := 0; i < 5; i++ {
-					game[i] = nil
-				}
-
+				games[gameNo] = make([][]int, 5)
+				scores[gameNo] = make([][]int, 5)
 			}
-			game[lineCtr] = make([]int, 5)
-			score[lineCtr] = make([]int, 5)
+			games[gameNo][lineCtr] = make([]int, 5)
+			scores[gameNo][lineCtr] = make([]int, 5)
 			i := 0
 			for _, n := range lineNos {
 				if n != "" {
-					game[lineCtr][i], _ = strconv.Atoi(n)
+					games[gameNo][lineCtr][i], _ = strconv.Atoi(n)
 					i++
 				}
 			}
 			lineCtr++
-			if lineCtr == 5 {
-				games[gameNo] = game
-				scores[gameNo] = score
-			}
 		}
 	}
 
 	keys := make([]int, len(games))
 	i := 0
-	for k := range games {
+	for k, _ := range games {
 		keys[i] = k
 		i++
 	}
@@ -80,37 +72,71 @@ func main() {
 	setUpProgressMap(progress, keys)
 
 	for _, n := range numbers {
-		processNumber(games, scores, progress, keys, n)
+		no, _ := strconv.Atoi(n)
+		winnerFound, winningGame := processNumber(games, scores, progress, keys, no)
+		if winnerFound {
+			fmt.Printf("Game %v bingo!\n", winningGame)
+			winningScore := calcWinningScore(games[winningGame], scores[winningGame], no)
+			fmt.Printf("The winning score was %v\n", winningScore)
+			break
+		} else {
+			//fmt.Printf("Process no. %v.  No winner found yet.\n", n)
+		}
 	}
+}
 
-	fmt.Println(len(numbers))
+func calcWinningScore(game [][]int, score [][]int, lastNo int) int {
+	ct := len(game)
+	sumUnmarked := 0
+	for i := 0; i < ct; i++ {
+		for j := 0; j < ct; j++ {
+			if score[i][j] == 0 {
+				sumUnmarked += game[i][j]
+			}
+		}
+	}
+	return sumUnmarked * lastNo
 }
 
 func processNumber(gamesMap map[int][][]int, scoresMap map[int][][]int, progressMap map[int]map[string]int,
-	keys []int, number int32) {
+	keys []int, number int)  (winnerFound bool, winningGame int){
 	for _, k := range keys {
-		processScores(gamesMap, scoresMap, progressMap, number, k)
+		winnerFound, winningGame := processScores(gamesMap, scoresMap, progressMap, number, k)
+		if winnerFound {
+			return true, winningGame
+		}
 	}
-	fmt.Printf("%v %v %v %v %v", gamesMap, scoresMap, progressMap, keys, number)
+	return false, -1
 }
 
 func processScores(gamesMap map[int][][]int, scoresMap map[int][][]int, progressMap map[int]map[string]int,
-	number int32, game int) {
+	number int, game int) (winnerFound bool, winningGame int){
 	ct := len(gamesMap[game])
 	for i := 0; i < ct; i++ {
 		for j := 0; j < ct; j++ {
 			if gamesMap[game][i][j] == int(number) {
+				//fmt.Printf("No. %v found in game %v\n", number, game)
 				scoresMap[game][i][j] = 1
-				processProgress(progressMap, i, j, game)
+				winnerFound, winningGame := processProgress(progressMap, i, j, game)
+				if winnerFound {
+					return true, winningGame
+				}
 			}
 		}
 	}
-	fmt.Printf("%v %v %v %v", gamesMap, scoresMap, number, game)
+	return false, -1
 }
 
-func processProgress(progressMap map[int]map[string]int, rowNo int, colNo int, game int) {
+func processProgress(progressMap map[int]map[string]int, rowNo int, colNo int, game int) (winnerFound bool, winningGame int){
 	progressMap[game]["r" + strconv.Itoa(rowNo)]  += 1
+	if progressMap[game]["r" + strconv.Itoa(rowNo)] == 5 {
+		return true, game
+	}
 	progressMap[game]["c" + strconv.Itoa(colNo)]  += 1
+	if progressMap[game]["c" + strconv.Itoa(colNo)] == 5 {
+		return true, game
+	}
+	return false, -1
 }
 
 func setUpProgressMap(progressMap map[int]map[string]int, keys []int) {
