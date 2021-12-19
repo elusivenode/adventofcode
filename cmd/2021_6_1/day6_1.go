@@ -30,29 +30,36 @@ func main() {
 	}
 	defer file.Close()
 
-	var school []*fish
+
+	var schools = map[int]*[]*fish{}
 	scanner := bufio.NewScanner(file)
 	for scanner.Scan() {
 		initialSchool := scanner.Text()
-		for _,f := range strings.Split(initialSchool, ",") {
+		for ct, f := range strings.Split(initialSchool, ",") {
+			var school []*fish
 			i,_ := strconv.Atoi(f)
 			fish := fish {
 				daysUntilSpawn: i,
 				isNew: false,
 			}
-			school = append(school, &fish)
+			school = append(school , &fish)
+			schools[ct] = &school
 		}
 	}
 
 	noOfDays := 80
-	for days := noOfDays; days > 0; days-- {
-		school = elapseOneDay(school)
-		fmt.Printf("After %v days, there are %v fish in the school.\n", noOfDays - days + 1, len(school))
-	}
-}
+	totalFish := 0
 
-func elapseOneDay(school []*fish) []*fish {
-	for _, f := range school {
+	for _, s := range schools {
+		for days := noOfDays; days > 0; days-- {
+			elapseOneDay(s)
+		}
+		totalFish += len(*s)
+	}
+	fmt.Printf("After %v days there are %v fish in the school", noOfDays, totalFish)
+}
+func elapseOneDay(school *[]*fish) {
+	for _, f := range *school {
 		if f.isNew == true && f.daysUntilSpawn == 8 {
 			f.isNew = false
 		}
@@ -63,11 +70,10 @@ func elapseOneDay(school []*fish) []*fish {
 					daysUntilSpawn: 8,
 					isNew: true,
 				}
-				school = append(school, &newFish)
+				*school = append(*school, &newFish)
 			} else {
 				f.daysUntilSpawn--
 			}
 		}
 	}
-	return school
 }
